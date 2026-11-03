@@ -42,6 +42,35 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // Lightbox for gallery photos (arrow keys / buttons to navigate, Esc or click to close)
+  const shots = [...document.querySelectorAll("a[data-lightbox]")];
+  let box = null, index = 0;
+  const show = (i) => {
+    index = (i + shots.length) % shots.length;
+    box.querySelector("img").src = shots[index].href;
+    box.querySelector("img").alt = shots[index].querySelector("img").alt;
+  };
+  const close = () => { box?.remove(); box = null; };
+  shots.forEach((a, i) => a.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    box = document.createElement("div");
+    box.className = "lightbox";
+    box.innerHTML = '<img alt=""><button class="prev" aria-label="Previous">&#8249;</button><button class="next" aria-label="Next">&#8250;</button>';
+    box.addEventListener("click", (e) => {
+      if (e.target.classList.contains("prev")) show(index - 1);
+      else if (e.target.classList.contains("next")) show(index + 1);
+      else close();
+    });
+    document.body.appendChild(box);
+    show(i);
+  }));
+  document.addEventListener("keydown", (e) => {
+    if (!box) return;
+    if (e.key === "Escape") close();
+    if (e.key === "ArrowLeft") show(index - 1);
+    if (e.key === "ArrowRight") show(index + 1);
+  });
+
   // Contact forms open the visitor's mail client (no backend needed on GitHub Pages)
   document.querySelectorAll("form[data-mailto]").forEach((form) => {
     form.addEventListener("submit", (ev) => {
