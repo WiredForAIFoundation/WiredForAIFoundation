@@ -26,6 +26,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const year = document.getElementById("year");
   if (year) year.textContent = new Date().getFullYear();
 
+  // YouTube: load the player only when clicked (faster page, no tracking until play)
+  document.querySelectorAll("a[data-yt]").forEach((a) => {
+    a.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      const iframe = document.createElement("iframe");
+      iframe.src = `https://www.youtube-nocookie.com/embed/${a.dataset.yt}?autoplay=1`;
+      iframe.title = a.getAttribute("aria-label") || "YouTube video";
+      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.allowFullscreen = true;
+      const wrapper = document.createElement("div");
+      wrapper.className = "video";
+      wrapper.appendChild(iframe);
+      a.replaceWith(wrapper);
+    });
+  });
+
   // Contact forms open the visitor's mail client (no backend needed on GitHub Pages)
   document.querySelectorAll("form[data-mailto]").forEach((form) => {
     form.addEventListener("submit", (ev) => {
